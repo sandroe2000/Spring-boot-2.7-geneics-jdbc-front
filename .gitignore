@@ -33,7 +33,7 @@ build/
 .vscode/
 
 ### back end ###
-generic\target
+generic/target
 
 ### front end ###
-generic_front\node_modules
+generic_front/node_modules
