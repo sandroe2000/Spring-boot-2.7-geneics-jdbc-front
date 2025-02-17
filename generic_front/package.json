@@ -1,0 +1,17 @@
+{
+  "name": "generic_front",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -a localhost -p 8083 -c-1"
+  },
+  "author": "sandroe2000@gmail.com",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "generic_front": "file:"
+  }
+}

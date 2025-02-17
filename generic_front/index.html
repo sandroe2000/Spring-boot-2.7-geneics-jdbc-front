@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/png" href="./logo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Live SQL Editor</title>
+        <link rel="stylesheet" href="/src/assets/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="/src/assets/bootstrap-icons/font/bootstrap-icons.css" />
+        <link rel="stylesheet" href="/src/assets/monaco-editor/min/vs/editor/editor.main.css" />
+        <link rel="stylesheet" href="/src/css/custom-boostrap.css" />
+    </head>
+    <body>
+        <!-- App -->
+        <div id="app"></div>
+        <!-- Modal -->
+        <div class="modal fade" id="appModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="appModalLabel"></h1>
+                        <button type="button" class="btn-close closeModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+        <!-- JavaScript -->
+        <script src="/src/assets/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script>
+            var require = { paths: { vs: '/src/assets/monaco-editor/min/vs' } };
+        </script>
+        <script src="/src/assets/monaco-editor/min/vs/loader.js"></script>
+		<script src="/src/assets/monaco-editor/min/vs/editor/editor.main.js"></script>
+        <script type="module" src="./src/lib/App.js"></script>
+    </body>
+</html>

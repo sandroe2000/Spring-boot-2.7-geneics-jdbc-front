@@ -1,0 +1,20 @@
+server:
+  port: 8092
+
+spring:
+  application:
+    name: generic
+    version: 1.0
+  datasource:
+    username: postgres
+    password: postgres!
+    url: jdbc:postgresql://localhost:5432/pessoa
+  jpa:
+    hibernate:
+      ddlAuto: none
+    showSql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        jdbc:
+          '[time_zone]': UTC

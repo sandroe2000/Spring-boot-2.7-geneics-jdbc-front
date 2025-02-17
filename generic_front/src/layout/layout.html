@@ -1,0 +1,174 @@
+<!-- App -->
+<div class="home-grid">
+    <div class="home-header">
+        <nav class="navbar navbar-expand-md sticky-top border-bottom" data-bs-theme="dark" style="background-color: #3C3C3C;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><img class="me-2" src="/logo.png" height="20px" /> Live SQL Editor</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasLabel">Live SQL Editor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Help</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="home-body split">		
+        <div id="leftPanel">			
+            <div class="card" id="cardMenu">
+                <div class="card-body" id="panelMenu">
+                    <div style="min-width: 200px;"> 
+                        <select class="form-select mb-2" id="schemaList">
+                            <option value="">selecione</option>
+                            <option value="public" selected>public</option>
+                        </select>	
+                        <select class="form-select mb-2" id="catalogList">
+                            <option value="">selecione</option>
+                            <option value="pessoa" selected>pessoa</option>
+                        </select>
+                        <div class="row g-2 mb-2">
+                            <div class="col">
+                                <input class="form-control" type="text" id="searchTable" />				
+                            </div>
+                            <div class="class col-auto">
+                                <button class="btn btn-light" id="btnRefreshTableSearch" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <ul id="listTableResult" class="list-group list-group-flush"></ul>
+                    </div>	                           
+                </div>
+            </div>
+        </div>
+        <div id="rightPanel">
+            <div id="rightTopPanel">                        
+                <div class="card" id="cardEditor">
+                    <div class="card-body">
+                        <ul class="nav mb-2">
+                            <li class="nav-item me-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" id="btnToggleSql" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                                        Sql Code
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" id="lnkVisualMode" href="javascript:void(0);">Visual</a></li>
+                                        <li><a class="dropdown-item" id="lnkCodeMode" href="javascript:void(0);">Code</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btnOpenFileSql" type="button" title="Open SQL file">
+                                    <i class="bi bi-filetype-sql"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btnSaveFileSql" type="button" title="Save">
+                                    <i class="bi bi-floppy2-fill"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btnExecSql" type="button" title="">
+                                    <i class="bi bi-caret-right-fill"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btnClearSql" type="button">
+                                    <i class="bi bi-eraser-fill"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btn1Sql" type="button">
+                                    <i class="bi bi-1-circle"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btn2Sql" type="button">
+                                    <i class="bi bi-2-circle"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light" id="btn3Sql" type="button">
+                                    <i class="bi bi-3-circle"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="hide" id="sqlVisual">
+                            <div id="visualStats">
+                                <div style="width: 50px;">
+                                    <span>X: </span><span id="visualStatsX1"></span></br>
+                                    <span>Y: </span><span id="visualStatsY1"></span></br>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="sqlEditor"></div>	
+                    </div>
+                </div>
+            </div>
+            <div id="rightBottomPanel">                        
+                <div class="card" id="cardProperties">
+                    <div class="card-header" style="background-color: #FFF;">
+                        <ul class="nav nav-tabs card-header-tabs" id="indexTabs">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="sqlResult-tab" data-bs-toggle="tab" data-bs-target="#sqlResultTabPane" type="button" role="tab" aria-controls="sqlResultTabPane" aria-selected="true" tutle="Sql Result">
+                                    Sql Result
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="conditionParameters-tab" data-bs-toggle="tab" data-bs-target="#conditionParametersTabPane" type="button" role="tab" aria-controls="conditionParametersTabPane" aria-selected="false" title="Condition parameters">
+                                    Condition parameters
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="fieldAlias-tab" data-bs-toggle="tab" data-bs-target="#fieldAliasTabPane" type="button" role="tab" aria-controls="fieldAliasTabPane" aria-selected="false" title="Fields' alias">
+                                    Fields' alias
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="navIndexTabContent">
+                            <div class="tab-pane fade show active" id="sqlResultTabPane" role="tabpanel" aria-labelledby="sqlResult-tab" tabindex="0">
+                                <div class="table-responsive" id="panelSqlResult">
+                                    <table class="table table-sm table-striped table-hover">
+                                        <thead></thead>
+                                        <tbody></tbody>
+                                    </table>	
+                                    <p id="resultInfo" class="fst-italic">Limitado a 10 registros por página, página 1.</p>
+                                    <pre id="resultDetail"></pre>							
+                                </div>									
+                            </div>
+                            <div class="tab-pane fade" id="conditionParametersTabPane" role="tabpanel" aria-labelledby="conditionParameters-tab" tabindex="0">
+                                <div id="panelParameters">
+                                    <form id="frmParms" onsubmit="return false;">
+                                        <pre></pre>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="fieldAliasTabPane" role="tabpanel" aria-labelledby="fieldAlias-tab" tabindex="0">
+                                <div id="panelFieldAlias">
+                                    <form id="frmAlias" onsubmit="return false;">
+                                        <pre></pre>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>		
+        </div>
+    </div>
+    <div class="home-footer bg-dark text-white">
+        Live SQL Editor v1.0-beta By ArrowData
+    </div>
+</div>
