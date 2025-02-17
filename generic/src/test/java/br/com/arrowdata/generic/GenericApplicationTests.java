@@ -1,10 +1,10 @@
-package br.com.arrowdata.receptivo;
+package br.com.arrowdata.generic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ReceptivoApplicationTests {
+class GenericApplicationTests {
 
 	@Test
 	void contextLoads() {
