@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### back end ###
+generic\target
+
+### front end ###
+generic_front\node_modules
