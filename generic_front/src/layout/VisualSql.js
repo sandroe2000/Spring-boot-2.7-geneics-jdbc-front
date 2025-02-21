@@ -12,17 +12,11 @@ export class VisualSql {
         this.result = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/14`;
+        let url = `http://localhost:8092/api/v1/generic/find/2`;
         let list = await this.app.fetch.postData(url, [
             {
-                _key: 'table', 
+                _key: 'name', 
                 _value: '%'+document.querySelector('#searchTable').value+'%'
-            },{
-                _key: 'schema', 
-                _value: document.querySelector('#schemaList').value
-            },{
-                _key: 'catalog', 
-                _value: document.querySelector('#catalogList').value
             }
         ]);
 
@@ -44,7 +38,7 @@ export class VisualSql {
         
         for(let item of list){
             
-            let jsonText = `{"table_name": "${item.table_name}", "columns": []}`;
+            let jsonText = `{"tableName": "${item.tableName}", "columns": []}`;
             
             if(lookup.indexOf(jsonText) === -1){
                 lookup.push(jsonText);
@@ -57,13 +51,13 @@ export class VisualSql {
             for(let item of list){
                 
                 let json = {
-                    column_name: item.column_name,
-                    udt_name: item.udt_name,
-                    constraint_type: item.constraint_type,
-                    fk_table: item.to_table
+                    columnName: item.columnName,
+                    dataType: item.dataType,
+                    isNullable: item.isNullable,
+                    referencedTableName: item.fkTableName
                 }
 
-                if(table.table_name == item.table_name){
+                if(table.tableName == item.tableName){
                     table.columns.push(json);
                 }
             }
@@ -75,15 +69,15 @@ export class VisualSql {
             let pk = '';
            
             for(let col of item.columns){
-                if(col.fk_table){
-                    fk += ','+col.fk_table;
+                if(col.referencedTableName){
+                    fk += ','+col.referencedTableName;
                 }
-                if(col.constraint_type){
-                    pk += ','+col.constraint_type;
+                if(col.constraintType){
+                    pk += ','+col.constraintType;
                 }
             }
-            let btn = `<button type='button' class='list-group-item text-start' pk='${item.table_name}' fk='${fk}'>
-                    <i class='bi bi-grid-3x3 me-2'></i>${item.table_name}
+            let btn = `<button type='button' class='list-group-item text-start' pk='${item.tableName}' fk='${fk.substring(1)}'>
+                    <i class='bi bi-grid-3x3 me-2'></i>${item.tableName}
                 </button>`;
 
             document.querySelector('#listTableResult').insertAdjacentHTML('afterbegin', btn)
@@ -92,30 +86,32 @@ export class VisualSql {
 
     async createDivTable(element){
 
+        let that = this;
+
         let fk = element.getAttribute('fk');
         let pk = element.getAttribute('pk');
         let sqlVisual = document.querySelector('#sqlVisual');
-        let result = this.result.find( obj => obj.table_name == pk);
+        let result = this.result.find( obj => obj.tableName == pk);
         let row = "";
       
         for(let item of result.columns){
 
             let constraintType = '';
-            if (item.constraint_type == 'PRIMARY KEY'){
+            if (item.constraintType == 'PRIMARY KEY'){
                 constraintType = 'PK';
-            } else if (item.constraint_type == 'CHECK'){
+            } else if (item.constraintType == 'CHECK'){
                 constraintType = 'CK';
-            } else if(item.fk_table) {
+            } else if(item.referencedTableName) {
                 constraintType = 'FK';
             }
             
             row += `<div class='row g-0'>                   
                     <div class='col-auto me-2'>
-                        <input id='${pk}_${item.column_name}' type='checkbox' class='form-check-input' />
+                        <input id='${pk}_${item.columnName}' type='checkbox' class='form-check-input' />
                     </div>
                     <div class='col-auto pk-fk me-2' style="width: 15px">${constraintType}</div>
-                    <div class='col text-truncate' title='${item.column_name}'>
-                        <label for='${pk}_${item.column_name}'>${item.column_name}</label>
+                    <div class='col text-truncate' title='${item.columnName}'>
+                        <label for='${pk}_${item.columnName}'>${item.columnName}</label>
                     </div>
                     <div class='col-auto ms-2'>
                         <i class='bi bi-arrow-down-up'></i>
@@ -143,9 +139,9 @@ export class VisualSql {
             card.style.top = `${topIni+(30*qtd)}px`;
             card.style.left = `${30*qtd}px`;
             card.style.zIndex = `${200+qtd}`;
+            
             this.dragElement(card);
             this.setLineFromTo(card);
-            //this.criaConector(card)
         }
     }
 
@@ -196,7 +192,6 @@ export class VisualSql {
             document.querySelector('#visualStatsX1').textContent = (elmnt.offsetTop - pos2);
             document.querySelector('#visualStatsY1').textContent = (elmnt.offsetLeft - pos1);
 
-            
             //TODO: AO LIBERAR DRAG -> VALIDAR POSIÇÃO DO DIV E SE NECESSARIO CORRI-LA.
             if(container.offsetTop == elmnt.offsetTop){
 
@@ -230,23 +225,43 @@ export class VisualSql {
             /* stop moving when mouse button is released:*/
             document.onmouseup = null;
             document.onmousemove = null;
+
+            //VALIDAR POSIÇÃO DO DIV E SE NECESSARIO CORRI-LA.
+            document.querySelectorAll('.table-float').forEach(element => {
+                if(container.offsetTop >= element.offsetTop){
+                    element.style.top = (container.offsetTop + 20) + 'px';
+                    that.setLineFromTo(element);
+                }
+                if(container.offsetLeft >= element.offsetLeft){
+                    element.style.left = (container.offsetLeft + 20) + 'px';
+                    that.setLineFromTo(element);
+                }
+                if((container.offsetLeft + container.offsetWidth) <= (element.offsetLeft + element.offsetWidth)){
+                    element.style.left = (((container.offsetLeft + container.offsetWidth) - element.offsetWidth) - 20) + 'px';
+                    that.setLineFromTo(element);
+                }
+                if((container.offsetTop + container.offsetHeight) <= (element.offsetTop + element.offsetHeight)){
+                    element.style.top = (((container.offsetTop + container.offsetHeight) - element.offsetHeight) - 20) + 'px';
+                    that.setLineFromTo(element);
+                }
+            });
         }
     }
 
     setLineFromTo(from){
 
-        let obj = this.result.find( obj => obj.table_name == from.id);
+        let obj = this.result.find( obj => obj.tableName == from.id);
         let container = document.querySelector('#sqlVisual');
-        let listTo = obj.columns.filter(item => item.fk_table);
+        let listTo = obj.columns.filter(item => item.referencedTableName);
 
         if (Array.isArray(listTo) && listTo.length) {
             listTo.forEach(element => {                
-                let to = container.querySelector(`#${element.fk_table}`);
-                let line = document.querySelector(`#line_${element.fk_table}_${from.id}`);
+                let to = container.querySelector(`#${element.referencedTableName}`);
+                let line = document.querySelector(`#line_${element.referencedTableName}_${from.id}`);
                 if(to){
                     if(!line){
                         line = `
-                        <div id='line_${element.fk_table}_${from.id}' from='${from.id}' to='${to.id}' class='line'>
+                        <div id='line_${element.referencedTableName}_${from.id}' from='${from.id}' to='${to.id}' class='line'>
                         <div class='line-in'>
                             <p>inner join Tipo_de_publico on</p> 
                             <p>Pessoa.Codigo = Tipo_de_publico.Pessoa_codigo</p> 
@@ -254,11 +269,11 @@ export class VisualSql {
                         </div>
                         `;
                         container.insertAdjacentHTML('afterbegin', line);
-                        document.querySelector(`#line_${element.fk_table}_${from.id}`).addEventListener('click', (event) => {
+                        document.querySelector(`#line_${element.referencedTableName}_${from.id}`).addEventListener('click', (event) => {
                         this.changeJoin(event);
                         });
                     }
-                    this.adjustLine(from, to, document.querySelector(`#line_${element.fk_table}_${from.id}`));
+                    this.adjustLine(from, to, document.querySelector(`#line_${element.referencedTableName}_${from.id}`));
                     return;
                 }                
             });

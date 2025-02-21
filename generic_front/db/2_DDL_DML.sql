@@ -1,4 +1,4 @@
--- Active: 1739464089839@@localhost@5432@pessoa
+-- Active: 1740084242082@@127.0.0.1@1433@model
 
 create database pessoa;
 
@@ -48,7 +48,8 @@ FROM
 WHERE     
     tabs.table_schema = 'public'     
     AND tabs.table_catalog = 'pessoa' 
-ORDER BY    tabs.table_name ASC
+ORDER BY    
+    tabs.table_name ASC
 
 -------------------------------------------------
 -- LISTA DE CONSTRAINTS - ID 2

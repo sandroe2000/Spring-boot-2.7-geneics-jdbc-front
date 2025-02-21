@@ -1,15 +1,12 @@
 import { VisualSql } from './VisualSql.js';
-import { SqlCode } from './SqlCode.js'
-
+import { SqlCode } from './SqlCode.js';
 import Split from '/src/assets/split.js/dist/split.es.js';
 
 export class Layout {
 
     constructor(app){
         this.app = app;
-        this.editor;
         this.obj = {};
-        this.tempParamValues = [];
         this.tableList = {};
         this.splitW = null;
         this.splitH = null;
@@ -30,6 +27,12 @@ export class Layout {
         await this.events();
         await this.sqlCode.events();
         await this.visualSql.events();
+    }
+
+    async formatSql(str){
+        
+        let result = format(str);
+        return result;
     }
 
     loadSplitJs(){

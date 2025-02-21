@@ -2,17 +2,18 @@ export class SqlCode {
 
     constructor(app){
         this.app = app;
-
+        this.tempParamValues = [];
         this.editor = this.app.getComponentByName('Layout').editor;
         this.obj = this.app.getComponentByName('Layout').obj;
+        this.format = null
     }
 
     loadSqlEditor(){
     
         this.editor = monaco.editor.create(document.querySelector('#sqlEditor'), {
             automaticLayout: true,
-            value: '',
-            language: 'pgsql'
+            language: 'sql',
+            value: ''
         });
 
         document.querySelector('#sqlEditor').style.height = `${document.querySelector('#rightTopPanel').offsetHeight - 90}px`;
@@ -24,6 +25,32 @@ export class SqlCode {
         if(this.editor.getValue()){
             this.editorChange();
         }
+
+        this.editor.addAction({
+            id: 'execSql',
+            label: 'Executar SQL',
+            keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter ],
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+            run: () => { this.execSql(); }
+        });
+
+        this.editor.addAction({
+            id: 'formatSql',
+            label: 'Formatar SQL',
+            keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10 ],
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+            run: () => { 
+                this.editor.setValue( format(this.editor.getValue(),{
+                        language: 'sql', // Defaults to "sql"
+                        indent: '    ', // Defaults to two spaces,
+                        uppercase: true, // Defaults to false
+                        linesBetweenQueries: 2 // Defaults to 1
+                    }) 
+                ); 
+            }
+        });
     }
 
     editorChange(){
@@ -52,7 +79,7 @@ export class SqlCode {
         let listAlias = [];
         
         for(let item of strAlias){
-            let keyValue = item.replaceAll('\n','').replaceAll(' ','').split('AS');
+            let keyValue = item.replaceAll('\n','').replaceAll('\r','').trim().split(' AS ');
             let alias = {_key: keyValue[0], _value: keyValue[1]};
             listAlias.push(alias);
         }
