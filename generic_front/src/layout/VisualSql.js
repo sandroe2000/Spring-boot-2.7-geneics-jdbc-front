@@ -7,12 +7,16 @@ export class VisualSql {
         this.sqlCode = sqlCode;
     }
 
+    template(){
+        return null;
+    }
+
     async loadTableList(){   
     
         this.result = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/1`;
+        let url = `http://localhost:8092/api/v1/generic/find/2`;
         let list = await this.app.fetch.postData(url, [
             {
                 _key: 'name', 
@@ -93,8 +97,8 @@ export class VisualSql {
 
         let that = this;
 
-        let fk = element.getAttribute('fk');
-        let pk = element.getAttribute('pk');
+        let fk = element.closest('button').getAttribute('fk');
+        let pk = element.closest('button').getAttribute('pk');
         let sqlVisual = document.querySelector('#sqlVisual');
         let result = this.result.find( obj => obj.tableName == pk);
         let row = "";

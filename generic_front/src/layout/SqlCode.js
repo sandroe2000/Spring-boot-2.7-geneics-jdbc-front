@@ -12,6 +12,10 @@ export class SqlCode {
         this.tableInFocus = null;
     }
 
+    template(){
+        return null;
+    }
+
     loadSqlEditor(){
     
         this.editor = monaco.editor.create(document.querySelector('#sqlEditor'), {
@@ -340,7 +344,9 @@ export class SqlCode {
 
 
             }else{
-                await this.createDivTable( event.target );
+                let visual = this.app.getComponentByName('VisualSql');
+
+                await visual.createDivTable( event.target );
                 //this.criaDiv(50, 100, event.target.getAttribute('pk'), event.target.getAttribute('fk'))
             }
         }, false);

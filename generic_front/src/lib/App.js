@@ -121,7 +121,7 @@ export class App {
                 },
             }).then(response => response.text());
         } catch (err) {
-            console.log('Deu ruim loadHTML ->', err);
+            console.log('Class sem template HTML ->', err);
         }
     }
 

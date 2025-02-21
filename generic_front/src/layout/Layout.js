@@ -1,5 +1,3 @@
-import { VisualSql } from './VisualSql.js';
-import { SqlCode } from './SqlCode.js';
 import Split from '/src/assets/split.js/dist/split.es.js';
 
 export class Layout {
@@ -16,10 +14,21 @@ export class Layout {
 
     async init(){
 
-        this.sqlCode = new SqlCode(this.app);
-        this.visualSql = new VisualSql(this.app, this.sqlCode );
+        await this.app.render({
+            path: "/src/layout/VisualSql.js",
+            app: true
+        });
+
+        await this.app.render({
+            path: "/src/layout/SqlCode.js",
+            app: true
+        });
+
+        this.visualSql = this.app.getComponentByName('VisualSql');
+        this.sqlCode = this.app.getComponentByName('SqlCode');
 
         this.loadSplitJs();
+
         await this.visualSql.loadTableList();
         this.sqlCode.loadSqlEditor();
         this.loadLayoutPanels();
