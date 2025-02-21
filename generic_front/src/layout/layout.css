@@ -131,3 +131,8 @@ div#visualStats {
     top: 20px;
     font-size: 0.65rem;
 }
+
+#btnToggleSql {
+    width: 120px !important;
+    font-weight: 700;
+}

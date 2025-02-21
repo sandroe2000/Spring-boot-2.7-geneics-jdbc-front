@@ -12,7 +12,7 @@ export class VisualSql {
         this.result = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/2`;
+        let url = `http://localhost:8092/api/v1/generic/find/1`;
         let list = await this.app.fetch.postData(url, [
             {
                 _key: 'name', 
@@ -356,22 +356,6 @@ export class VisualSql {
         document.querySelector('#btnRefreshTableSearch').addEventListener('click', async (event) => {
             await this.loadTableList();        
         });
-
-        document.querySelector('#listTableResult').addEventListener('click', async (event) => { 
-            if(document.querySelector('#sqlVisual').classList.contains('hide')){
-                await this.app.render({
-                    path: "/src/home/InsertionType.js",
-                    target: ".modal",
-                    params: {
-                        label: "Chose the type of insertion"
-                    },
-                    app: true
-                });
-            }else{
-                await this.createDivTable( event.target );
-                //this.criaDiv(50, 100, event.target.getAttribute('pk'), event.target.getAttribute('fk'))
-            }
-        }, false);
 
         /*
         document.querySelector('#btn2').addEventListener('click', async (event) => {

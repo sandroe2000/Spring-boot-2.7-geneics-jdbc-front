@@ -1,3 +1,5 @@
+import { Utils } from "/src/lib/Utils.js";
+
 export class SqlCode {
 
     constructor(app){
@@ -6,6 +8,8 @@ export class SqlCode {
         this.editor = this.app.getComponentByName('Layout').editor;
         this.obj = this.app.getComponentByName('Layout').obj;
         this.format = null
+        this.utils = new Utils();
+        this.tableInFocus = null;
     }
 
     loadSqlEditor(){
@@ -38,19 +42,21 @@ export class SqlCode {
         this.editor.addAction({
             id: 'formatSql',
             label: 'Formatar SQL',
-            keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10 ],
+            keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Space ],
             contextMenuGroupId: 'navigation',
             contextMenuOrder: 1.5,
-            run: () => { 
-                this.editor.setValue( format(this.editor.getValue(),{
-                        language: 'sql', // Defaults to "sql"
-                        indent: '    ', // Defaults to two spaces,
-                        uppercase: true, // Defaults to false
-                        linesBetweenQueries: 2 // Defaults to 1
-                    }) 
-                ); 
-            }
+            run: () => { this.formatSql() }
         });
+    }
+
+    async formatSql(){
+
+        this.editor.setValue( format(this.editor.getValue(),{
+            language: 'sql', // Defaults to "sql"
+            indent: '    ', // Defaults to two spaces,
+            uppercase: true, // Defaults to false
+            linesBetweenQueries: 2 // Defaults to 1
+        }) );
     }
 
     editorChange(){
@@ -235,6 +241,24 @@ export class SqlCode {
         tabTrigger.show();
     }
 
+    async buildQuery(id, type){
+
+        let url = `http://localhost:8092/api/v1/generic/buildQuery`;
+        let data = await this.app.fetch.getData(url, `id=${id}&type=${type}`);
+        let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
+        
+        for(let item of data){
+            str += `${this.setLenght(item.ORDINAL_POSITION, 12)}${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
+        }
+
+        this.editor.setValue(str);
+        if(type == "SELECT") this.formatSql();
+    }
+
+    setLenght(str, len){
+        return str + ' '.repeat(len - str.length);
+    }
+
     async events(){
 
         document.querySelector('#btnSaveFileSql').addEventListener('click', async (event) => {
@@ -259,6 +283,26 @@ export class SqlCode {
                 ' FROM ',
                 '   generic_metadata '].join('\n');
             this.editor.setValue( str ) ;
+        }, false);
+
+        document.querySelector('#listTableResult').addEventListener('click', async (event) => { 
+            if(document.querySelector('#sqlVisual').classList.contains('hide')){
+
+                this.tableInFocus = event.target.getAttribute('pk');
+
+                await this.app.render({
+                    path: "/src/layout/InsertionType.js",
+                    target: ".modal",
+                    app: true,
+                    params: {
+                        sqlCode: this,
+                        label: "Chose the type of insertion"
+                    }
+                });
+            }else{
+                await this.createDivTable( event.target );
+                //this.criaDiv(50, 100, event.target.getAttribute('pk'), event.target.getAttribute('fk'))
+            }
         }, false);
     }
 }

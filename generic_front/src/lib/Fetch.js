@@ -14,7 +14,8 @@ export class Fetch {
     }
 
     async getData(url, params) {
-        await fetch(`${url}?${params}`, {
+        let result = false;
+        await fetch(`${url}?${params}&uuidv4=${this.uuidv4()}`, {
             method: 'GET',
             headers: this.headers
         }).then(async (resp) => {
@@ -36,6 +37,7 @@ export class Fetch {
     async setData(url, json) {
         let uri = `${url}?uuidv4=${this.uuidv4()}&id=${json.codigo}`;
         let method = "PUT";
+        let result = false;
         if (!json.codigo) {
             delete json.codigo;
             uri = `${url}?uuidv4=${this.uuidv4()}`
@@ -83,6 +85,7 @@ export class Fetch {
     }
 
     async putData(url, json) {
+        let result = false;
         const response = await fetch(url, {
             method: "PUT",
             headers: this.headers,
