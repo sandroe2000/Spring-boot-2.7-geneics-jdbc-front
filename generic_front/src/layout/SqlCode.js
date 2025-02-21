@@ -243,16 +243,42 @@ export class SqlCode {
 
     async buildQuery(id, type){
 
-        let url = `http://localhost:8092/api/v1/generic/buildQuery`;
-        let data = await this.app.fetch.getData(url, `id=${id}&type=${type}`);
-        let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
-        
-        for(let item of data){
-            str += `${this.setLenght(item.ORDINAL_POSITION, 12)}${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
+        if(type == "OBJECT_NAME"){
+            var line = this.editor.getPosition();
+            var range = new monaco.Range(line.lineNumber, line.column, line.lineNumber, line.column);
+            var id_ = { major: 1, minor: 1 };
+            var text = id.toUpperCase();
+            var op = {identifier: id_, range: range, text: text, forceMoveMarkers: true};
+            this.editor.executeEdits("my-source", [op]);
+            //this.editor.insert( id.toUpperCase() );
+            return false;
         }
 
-        this.editor.setValue(str);
-        if(type == "SELECT") this.formatSql();
+        let url = `http://localhost:8092/api/v1/generic/buildQuery`;
+        let data = await this.app.fetch.getData(url, `id=${id}&type=${type}`);
+        
+        if(type == "SELECT"){
+
+            let str = 'SELECT ';
+            for(let item of data){
+                str += `   ${item.columnName} AS ${item.columnName}, `;
+            }
+            str += 'FROM '+id;
+            str += ' ORDER BY 1 OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY'
+
+            this.editor.setValue(str.replace(', FROM', ' FROM'));
+            this.formatSql();
+            return false;
+        }
+
+        if(type == "DISCRIBE"){
+        
+            let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
+            for(let item of data){
+                str += `${this.setLenght(item.ORDINAL_POSITION, 12)}${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
+            }
+            this.editor.setValue(str);
+        }
     }
 
     setLenght(str, len){
@@ -290,15 +316,29 @@ export class SqlCode {
 
                 this.tableInFocus = event.target.getAttribute('pk');
 
-                await this.app.render({
-                    path: "/src/layout/InsertionType.js",
-                    target: ".modal",
-                    app: true,
-                    params: {
-                        sqlCode: this,
-                        label: "Chose the type of insertion"
+                if(event.target.classList.contains('bi-chevron-compact-down')){
+                   
+                    let panelHide = event.target.closest('button').nextElementSibling;
+                    
+                    if(panelHide.classList.contains('hide')){
+                        panelHide.classList.remove('hide'); 
+                    }else{
+                        panelHide.classList.add('hide');
                     }
-                });
+                    
+                }else{
+                    await this.app.render({
+                        path: "/src/layout/InsertionType.js",
+                        target: ".modal",
+                        app: true,
+                        params: {
+                            sqlCode: this,
+                            label: "Chose the type of insertion"
+                        }
+                    });
+                }
+
+
             }else{
                 await this.createDivTable( event.target );
                 //this.criaDiv(50, 100, event.target.getAttribute('pk'), event.target.getAttribute('fk'))

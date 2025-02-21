@@ -136,3 +136,9 @@ div#visualStats {
     width: 120px !important;
     font-weight: 700;
 }
+
+.list-fields {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

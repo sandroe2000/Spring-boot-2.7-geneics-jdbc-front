@@ -1,11 +1,8 @@
 package br.com.arrowdata.generic.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,30 +63,13 @@ public class GenericRestController {
         @RequestParam String id, 
         @RequestParam String type) throws Exception {
 
-        //Map<String, String> map = new HashMap<>();
-        //if("OBJECT_NAME".equals(type)){
-        //    map.put("result", id.toString().toUpperCase());
-        //}else 
-        if("DESCRIBE".equals(type)){
-
-            GenericParameters   parameter = new GenericParameters();  
-                                parameter.set_key("name");
-                                parameter.set_value(id);
-            List<GenericParameters> genericParameters = Arrays.asList(parameter);
-
-            return this.findById(1L, genericParameters);
-        }
-        //}else if("SELECT".equals(type)){
-            //    String result = "SELECT "+
-            //                    "   NOME       AS nome, "+
-            //                    "   ID         AS id, "+   
-            //                    "   DATA       AS data "+
-            //                    "FROM "+
-            //                    "   "+ id.toUpperCase();
-            //    map.put("result", result);
-            //}
-            //return map;
-        return null;        
+        GenericParameters parameter = new GenericParameters();  
+        parameter.set_key("name");
+        parameter.set_value(id);
+        List<GenericParameters> genericParameters = Arrays.asList(parameter);
+        
+        List<Map<String, String>> result = this.findById(1L, genericParameters); 
+        return result;     
     }
 
 }

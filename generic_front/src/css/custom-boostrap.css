@@ -22,6 +22,10 @@
     display: none;
 }
 
+.show {
+    display: bloxk;
+}
+
 .nowrap {
     white-space: nowrap;
 }

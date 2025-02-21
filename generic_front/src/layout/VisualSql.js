@@ -67,6 +67,7 @@ export class VisualSql {
             
             let fk = '';
             let pk = '';
+            let columns = '';
            
             for(let col of item.columns){
                 if(col.referencedTableName){
@@ -75,10 +76,14 @@ export class VisualSql {
                 if(col.constraintType){
                     pk += ','+col.constraintType;
                 }
+                if(col.columnName){
+                    columns += `<li style="padding-left: 30px" pk='${col.columnName}'>&#8226; ${col.columnName}</li>`;
+                }
             }
-            let btn = `<button type='button' class='list-group-item text-start' pk='${item.tableName}' fk='${fk.substring(1)}'>
-                    <i class='bi bi-grid-3x3 me-2'></i>${item.tableName}
-                </button>`;
+            let btn = `<button type='button' class='list-group-item text-start d-flex justify-content-between' pk='${item.tableName}' fk='${fk.substring(1)}'>
+                    <div pk='${item.tableName}'><i class='bi bi-grid-3x3 me-2'></i>${item.tableName}</div><i class="bi bi-chevron-compact-down"></i>
+                </button>                
+                <ul class='list-fields hide'></i>${columns}</ul>`;
 
             document.querySelector('#listTableResult').insertAdjacentHTML('afterbegin', btn)
         }
