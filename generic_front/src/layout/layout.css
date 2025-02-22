@@ -142,3 +142,9 @@ div#visualStats {
     margin: 0;
     padding: 0;
 }
+
+#tblContextMenu {
+    position: absolute;
+    display: block;
+    z-index: 9999;
+}

@@ -21,14 +21,16 @@ export class SqlCode {
     }
 
     loadSqlEditor(){
+
+        let sqlEditor = document.querySelector('#sqlEditor');
     
-        this.editor = monaco.editor.create(document.querySelector('#sqlEditor'), {
+        this.editor = monaco.editor.create(sqlEditor, {
             automaticLayout: true,
             language: 'sql',
             value: ''
         });
 
-        document.querySelector('#sqlEditor').style.height = `${document.querySelector('#rightTopPanel').offsetHeight - 90}px`;
+        sqlEditor.style.height = `${document.querySelector('#rightTopPanel').offsetHeight - 90}px`;
 
         this.editor.getModel().onDidChangeContent((event) => {
             this.editorChange();
@@ -150,7 +152,7 @@ export class SqlCode {
         table.querySelector('thead').innerHTML = '';
         table.querySelector('tbody').innerHTML = '';
 
-        document.querySelector('#resultInfo').style.display = 'block';
+        //document.querySelector('#resultInfo').style.display = 'block';
         document.querySelector('#resultDetail').innerHTML = '';
 
         if(!obj.result?.length) return false;
@@ -233,7 +235,7 @@ export class SqlCode {
         table.querySelector('thead').innerHTML = '';
         table.querySelector('tbody').innerHTML = '';
 
-        document.querySelector('#resultInfo').style.display = 'none';
+        //document.querySelector('#resultInfo').style.display = 'none';
         document.querySelector('#resultDetail').innerHTML = err;
     }
 
@@ -254,13 +256,12 @@ export class SqlCode {
         let id = this.visual.dataNode.tableName;
 
         if(type == "OBJECT_NAME"){
-            var line = this.editor.getPosition();
-            var range = new monaco.Range(line.lineNumber, line.column, line.lineNumber, line.column);
-            var id_ = { major: 1, minor: 1 };
-            var text = id.toUpperCase();
-            var op = {identifier: id_, range: range, text: text, forceMoveMarkers: true};
+            let line = this.editor.getPosition();
+            let range = new monaco.Range(line.lineNumber, line.column, line.lineNumber, line.column);
+            let id_ = { major: 1, minor: 1 };
+            let text = id.toUpperCase();
+            let op = {identifier: id_, range: range, text: text, forceMoveMarkers: true};
             this.editor.executeEdits("my-source", [op]);
-            //this.editor.insert( id.toUpperCase() );
             return false;
         }
 
@@ -270,36 +271,41 @@ export class SqlCode {
         if(type == "SELECT"){
 
             let str = 'SELECT ';
+
             for(let item of data){
                 str += `   ${item.columnName} AS ${item.columnName}, `;
             }
-            str += 'FROM '+id;
-            str += ' ORDER BY 1 OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY'
 
+            str += 'FROM '+id;
+            str += ' ORDER BY 1 OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY';
             this.editor.setValue(str.replace(', FROM', ' FROM'));
             this.formatSql();
+
             return false;
         }
 
         if(type == "DESCRIBE"){
         
             let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
+            
             for(let item of data){
                 str += `${this.setLenght(item.ORDINAL_POSITION, 12)}${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
             }
+
             this.editor.setValue(str);
         }
     }
 
     setLenght(str, len){
+
         return str + ' '.repeat(len - str.length);
     }
 
-    setdataNode(tableName){
-
-    }
-
     async events(){
+
+        document.querySelector('#btnIndentSql').addEventListener('click', async (event) => {
+            await this.formatSql();      
+        });
 
         document.querySelector('#btnSaveFileSql').addEventListener('click', async (event) => {
             await this.execSql();
@@ -352,7 +358,7 @@ export class SqlCode {
                 }
             }else{                                
                 this.visual.setDataNode( event.target.getAttribute('pk') );
-                await visual.createDivTable();
+                await this.visual.createDivTable();
             }
         }, false);
     }

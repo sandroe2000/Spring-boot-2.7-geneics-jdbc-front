@@ -17,7 +17,7 @@ export class VisualSql {
         this.data  = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/1`;
+        let url = `http://localhost:8092/api/v1/generic/find/2`;
         let list = await this.app.fetch.postData(url, [
             {
                 _key: 'name', 
@@ -45,6 +45,7 @@ export class VisualSql {
                     columnName: item.columnName,
                     dataType: item.dataType,
                     isNullable: item.isNullable,
+                    constraintType: item.constraintType,
                     referencedTableName: item.fkTableName
                 }
 
@@ -147,105 +148,57 @@ export class VisualSql {
 
     dragElement(elmnt) {
 
-        let that = this;
+        const draggable = elmnt
         let container = document.querySelector('#sqlVisual');
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let isDragging = false;
+        let offsetX, offsetY;
 
-        if (document.querySelector(`div#${elmnt.id} div.card-header`)) {
-            document.querySelector(`div#${elmnt.id} div.card-header`).onmousedown = dragMouseDown;
-        } else {
-            elmnt.onmousedown = dragMouseDown;
-        }
-
-        //if (elmnt.id) {
-        //    elmnt.onmousedown = dragMouseDown;
-        //} else {
-        //    elmnt.onmousedown = dragMouseDown;
-        //}
-
-        function dragMouseDown(e) {
-            e = e || window.event;
+        draggable.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            // get the mouse cursor position at startup:
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            // call a function whenever the cursor moves:
-            document.onmousemove = elementDrag;
-        };
+            isDragging = true;
+            offsetX = e.clientX - draggable.offsetLeft;
+            offsetY = e.clientY - draggable.offsetTop;
+        });
 
-        function elementDrag(e) {
-            e = e || window.event;
+        document.addEventListener('mousemove', (e) => {
             e.preventDefault();
-            // calculate the new cursor position:
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            // set the element's new position:
-            elmnt.style.top = (elmnt.offsetTop - pos2) + 'px';
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + 'px';
+            if (isDragging) {
+                // Calculate the new position in steps of 10px
+                let newX = Math.round((e.clientX - offsetX) / 10) * 10;
+                let newY = Math.round((e.clientY - offsetY) / 10) * 10;
 
-            that.setLineFromTo(elmnt);
-            //that.moveLine(elmnt);
+                // Apply the new position
+                draggable.style.left = `${newX}px`;
+                draggable.style.top = `${newY}px`;
 
-            document.querySelector('#visualStatsX1').textContent = (elmnt.offsetTop - pos2);
-            document.querySelector('#visualStatsY1').textContent = (elmnt.offsetLeft - pos1);
-
-            //TODO: AO LIBERAR DRAG -> VALIDAR POSIÇÃO DO DIV E SE NECESSARIO CORRI-LA.
-            if(container.offsetTop == elmnt.offsetTop){
-
-                elmnt.style.top = (elmnt.offsetTop + 20) + 'px';
-                closeDragElement();
-                that.setLineFromTo(elmnt);
+                this.setLineFromTo(draggable);
+                document.querySelector('#visualStatsX1').textContent = (newX);
+                document.querySelector('#visualStatsY1').textContent = (newY);
             }
+        });
 
-            if(container.offsetLeft == elmnt.offsetLeft){
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
 
-                elmnt.style.left = (elmnt.offsetLeft + 20) + 'px';
-                closeDragElement();
-                that.setLineFromTo(elmnt);
-            }
-
-            if((container.offsetLeft + container.offsetWidth) == (elmnt.offsetLeft + elmnt.offsetWidth)){
-                elmnt.style.left = (elmnt.offsetLeft - 20) + 'px';
-                closeDragElement();
-                that.setLineFromTo(elmnt);
-            }
-            
-            if((container.offsetTop + container.offsetHeight) == (elmnt.offsetTop + elmnt.offsetHeight)){
-                elmnt.style.top = (elmnt.offsetTop - 20) + 'px';
-                closeDragElement();
-                that.setLineFromTo(elmnt);
-            }
-            
-        }
-
-        function closeDragElement() {
-            /* stop moving when mouse button is released:*/
-            document.onmouseup = null;
-            document.onmousemove = null;
-
-            //VALIDAR POSIÇÃO DO DIV E SE NECESSARIO CORRI-LA.
             document.querySelectorAll('.table-float').forEach(element => {
                 if(container.offsetTop >= element.offsetTop){
                     element.style.top = (container.offsetTop + 20) + 'px';
-                    that.setLineFromTo(element);
+                    this.setLineFromTo(element);
                 }
                 if(container.offsetLeft >= element.offsetLeft){
                     element.style.left = (container.offsetLeft + 20) + 'px';
-                    that.setLineFromTo(element);
+                    this.setLineFromTo(element);
                 }
                 if((container.offsetLeft + container.offsetWidth) <= (element.offsetLeft + element.offsetWidth)){
                     element.style.left = (((container.offsetLeft + container.offsetWidth) - element.offsetWidth) - 20) + 'px';
-                    that.setLineFromTo(element);
+                    this.setLineFromTo(element);
                 }
                 if((container.offsetTop + container.offsetHeight) <= (element.offsetTop + element.offsetHeight)){
                     element.style.top = (((container.offsetTop + container.offsetHeight) - element.offsetHeight) - 20) + 'px';
-                    that.setLineFromTo(element);
+                    this.setLineFromTo(element);
                 }
             });
-        }
+        });
     }
 
     setLineFromTo(from){
@@ -340,6 +293,15 @@ export class VisualSql {
         line.style.alignContent = 'center';
     }
 
+    copiarSql(str){
+        navigator.clipboard.writeText(str)
+        .then(() => {
+            vNotify.info({title:'Text copied'});
+            console.log('Text copied');
+        })
+        .catch((err) => console.error(err.name, err.message));
+    }
+
     async events(){
 
         document.querySelector('#sqlVisual').addEventListener('click', (event) => {
@@ -357,174 +319,35 @@ export class VisualSql {
             await this.loadTableList();        
         });
 
-        /*
-        document.querySelector('#btn2').addEventListener('click', async (event) => {
-            this.criaDiv(100, 160, 'div3', 'div1');   
-        });
-        document.querySelector('#btn3').addEventListener('click', async (event) => { 
-            this.criaDiv(20, 80, 'div1', '');     
-        });
-        */
-    }
-
-    /*
-    //--> https://programacaoscriptsweb.blogspot.com/2012/10/ligando-duas-divs-com-um-conector-sem.html  
-    criaDiv(_x, _y, id, fk){
-
-        let sqlVisual = document.querySelector('#sqlVisual');
-
-        let div = document.createElement("div");
-            div.setAttribute('id', id);
-            div.setAttribute('fk', fk);
-            div.setAttribute('class', 'gerada');
-            div.setAttribute('style', `width:200px;height:100px;top:${_y}px;left:${_x}px`);
-
-        let col1 = document.createElement("div");
-            col1.setAttribute('class', 'col-md-2 ps-1');
-
-        let icon = document.createElement("i");
-            icon.setAttribute('class', 'bi bi-node-plus-fill');
-
-        let col2 = document.createElement("div");
-            col2.setAttribute('class', 'col-md-8');
-
-        let col3 = document.createElement("div");
-            col3.setAttribute('class', 'col-md-2');
-
-        let row = document.createElement("div");
-            row.setAttribute('class', 'row g-0');
-
-        div.appendChild(row);
-
-        row.appendChild(col1);
-        row.appendChild(col2);
-        row.appendChild(col3);
-
-        col1.appendChild(icon);
-
-        sqlVisual.insertAdjacentElement('afterbegin', div);
-
-        this.dragElement(div);
-        this.criaConector(div)
-    }
-
-    setParams(div1, div2){
-
-        let obj1 = div1.querySelector(`.bi-node-plus-fill`);
-        let obj2 = div2.querySelector(`.bi-node-plus-fill`);
-        let w = 16;
-        let h = 21;
-
-        this.params = {
-            obj1: obj1,
-            obj2: obj2,
-            _x1: obj1.offsetLeft + div1.offsetLeft,
-            _y1: obj1.offsetTop + div1.offsetTop,
-            _x2: obj2.offsetLeft + div2.offsetLeft,
-            _y2: obj2.offsetTop + div2.offsetTop,
-            _width1: w,
-            _height1: h,
-            _height2: h,
-            sqlVisual: document.querySelector('#sqlVisual'),
-            widthX: (obj2.offsetLeft + div2.offsetLeft) - ((obj1.offsetLeft + div1.offsetLeft)+h),
-            difYe: (obj2.offsetTop + div2.offsetTop) + h/2 - ((obj1.offsetTop + div1.offsetTop) + h/2),
-        };
-
-    }
-
-    criaConector(obj){
-
-        let div1 = obj;
-
-        if(!div1.getAttribute('fk') || div1.getAttribute('fk').length == 0) {
-            return false;
+        if ('clipboard' in navigator) {
+            document.querySelector('#tblSqlResult tbody').addEventListener('dblclick', (event) => {
+                let str = event.target.closest('td').textContent;
+                this.copiarSql(str);
+            });
         }
 
-        for(let item of obj.getAttribute('fk').split(',')){
-            
-            if(!item) continue;
+        document.querySelector('#tblSqlResult tbody').addEventListener('contextmenu', (event) => {
 
-            let lineA = document.createElement("div");
-                lineA.setAttribute('id', `${div1.getAttribute('id')}_${item}_A`);
-                lineA.setAttribute('class', 'conecta');
+            event.preventDefault();
+            if(document.querySelector('#tblContextMenu')) return false;
 
-            let lineB = document.createElement("div");
-                lineB.setAttribute('id', `${div1.getAttribute('id')}_${item}_B`);
-                lineB.setAttribute('class', 'conecta');
+            let contextmenu = `<ul id="tblContextMenu" class="dropdown-menu" eTarget="${event.target.closest('td').textContent}">
+                    <li><a class="dropdown-item" id="menuCopiar" href="javascript:void(0);">Copiar</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Editar</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Excluir</a></li>
+                </ul>`;
+            document.querySelector('body').insertAdjacentHTML('afterbegin', contextmenu);
+            document.querySelector('#tblContextMenu').style.top = `${event.clientY}px`; 
+            document.querySelector('#tblContextMenu').style.left = `${event.clientX}px`;
 
-            let lineC = document.createElement("div");
-                lineC.setAttribute('id', `${div1.getAttribute('id')}_${item}_C`);
-                lineC.setAttribute('class', 'conecta');
+            document.querySelector('#tblContextMenu').addEventListener('click', (e) => {
+                if(e.target.id == 'menuCopiar'){
+                    let str = document.querySelector('#tblContextMenu').getAttribute('eTarget');
+                    this.copiarSql(str);
+                }
+                document.querySelector('#tblContextMenu').remove();
+            });
 
-            sqlVisual.insertAdjacentElement('afterbegin', lineA);
-            sqlVisual.insertAdjacentElement('afterbegin', lineB);
-            sqlVisual.insertAdjacentElement('afterbegin', lineC);
-        }
-
-        this.moveLine(obj);
-    }
-
-    
-    moveLine(obj){
-
-        document.querySelectorAll(`div[fk*="${obj.getAttribute('id')}"]`).forEach(element => {
-            this.moveLine(element);
         });
-
-        let div1 = obj;
-        let div2 = null;
-        
-        for(let item of obj.getAttribute('fk').split(',')){
-
-            if(!item) continue;
-
-            div2 = document.querySelector(`#${item}`);
-
-            if(!div2) continue;
-
-            this.setParams(div1, div2);
-
-            let h, w, l, t  = 0;
-
-            if((this.params.widthX/2) >= 0){
-                w = this.params.widthX/2;
-                l = parseInt(this.params._x1+this.params._width1);               
-            }else{
-                w = Math.abs(this.params.widthX/2) - this.params._width1;
-                l = parseInt(this.params._x1) - w; 
-            }
-            let lineA = document.querySelector(`#${div1.getAttribute('id')}_${div2.getAttribute('id')}_A`);
-                lineA.removeAttribute('style');
-                lineA.setAttribute('style', `width:${w}px; height:1px; top:${parseInt(this.params._y1+this.params._height1/2)}px; left:${l}px`);
-
-            if(this.params.difYe >= 0){
-                h = this.params.difYe;
-                t = parseInt(this.params._y1+this.params._height1/2);                
-            }else{
-                h = Math.abs(this.params.difYe);
-                t = parseInt(this.params._y1+this.params._height1/2) - h; 
-            }
-            let lineB = document.querySelector(`#${div1.getAttribute('id')}_${div2.getAttribute('id')}_B`);
-                lineB.removeAttribute('style');
-                lineB.setAttribute('style', `width:1px; height:${h}px; top:${t}px; left:${parseInt(this.params._x1+this.params._width1+this.params.widthX/2)}px`);
-                
-            if((this.params.widthX/2) >= 0){
-                w = this.params.widthX/2;
-                l = parseInt(this.params._x1+this.params._width1+this.params.widthX/2);               
-            }else{
-                w = Math.abs(this.params.widthX/2) - this.params._width1;
-                l = parseInt(this.params._x1+this.params._width1+this.params.widthX/2) - w; 
-            }
-            let lineC = document.querySelector(`#${div1.getAttribute('id')}_${div2.getAttribute('id')}_C`);
-                lineC.removeAttribute('style');
-                lineC.setAttribute('style', `width:${w}px; height:1px; top:${parseInt(this.params._y2+this.params._height2/2)}px; left:${l}px`);
-        }
-
-        document.querySelector('#visualStatsX1').textContent = this.params._x1;
-        document.querySelector('#visualStatsY1').textContent = this.params._y1;
-
-        document.querySelector('#visualStatsX2').textContent = this.params._x2;
-        document.querySelector('#visualStatsY2').textContent = this.params._y2;
     }
-    */
 }

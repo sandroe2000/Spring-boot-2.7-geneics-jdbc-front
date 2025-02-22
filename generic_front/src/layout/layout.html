@@ -68,37 +68,43 @@
                                 </div>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btnOpenFileSql" type="button" title="Open SQL file">
+                                <button class="btn btn-light btn-icon" id="btnOpenFileSql" type="button" title="Open SQL file">
                                     <i class="bi bi-filetype-sql"></i>
                                 </button>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btnSaveFileSql" type="button" title="Save">
+                                <button class="btn btn-light btn-icon" id="btnSaveFileSql" type="button" title="Save">
                                     <i class="bi bi-floppy2-fill"></i>
                                 </button>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btnExecSql" type="button" title="">
+                                <button class="btn btn-light btn-icon" id="btnExecSql" type="button" title="">
                                     <i class="bi bi-caret-right-fill"></i>
                                 </button>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btnClearSql" type="button">
+                                <button class="btn btn-light btn-icon" id="btnClearSql" type="button">
                                     <i class="bi bi-eraser-fill"></i>
                                 </button>
                             </li>
+                            
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btn1Sql" type="button">
+                                <button class="btn btn-light btn-icon" id="btnIndentSql" type="button">
+                                    <i class="bi bi-indent"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item me-1">
+                                <button class="btn btn-light btn-icon" id="btn1Sql" type="button">
                                     <i class="bi bi-1-circle"></i>
                                 </button>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btn2Sql" type="button">
+                                <button class="btn btn-light btn-icon" id="btn2Sql" type="button">
                                     <i class="bi bi-2-circle"></i>
                                 </button>
                             </li>
                             <li class="nav-item me-1">
-                                <button class="btn btn-light" id="btn3Sql" type="button">
+                                <button class="btn btn-light btn-icon" id="btn3Sql" type="button">
                                     <i class="bi bi-3-circle"></i>
                                 </button>
                             </li>
@@ -140,11 +146,11 @@
                         <div class="tab-content" id="navIndexTabContent">
                             <div class="tab-pane fade show active" id="sqlResultTabPane" role="tabpanel" aria-labelledby="sqlResult-tab" tabindex="0">
                                 <div class="table-responsive" id="panelSqlResult">
-                                    <table class="table table-sm table-striped table-hover">
+                                    <table id="tblSqlResult" class="table table-sm table-striped table-hover">
                                         <thead></thead>
                                         <tbody></tbody>
                                     </table>	
-                                    <p id="resultInfo" class="fst-italic">Limitado a 10 registros por página, página 1.</p>
+                                    <!--p id="resultInfo" class="fst-italic">Limitado a 10 registros por página, página 1.</p-->
                                     <pre id="resultDetail"></pre>							
                                 </div>									
                             </div>

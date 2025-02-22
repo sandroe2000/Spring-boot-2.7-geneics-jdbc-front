@@ -98,12 +98,14 @@ export class Layout {
             document.querySelector('#sqlEditor').classList.add('hide');
             document.querySelector('#sqlVisual').classList.remove('hide');
             document.querySelector('#btnToggleSql').textContent = 'Visual Sql';
+            document.querySelectorAll('.btn-icon').forEach((el) => el.classList.add('disabled'));
         }, false);
 
         document.querySelector('#lnkCodeMode').addEventListener('click', async (event) => {             
             document.querySelector('#sqlEditor').classList.remove('hide');
             document.querySelector('#sqlVisual').classList.add('hide');
             document.querySelector('#btnToggleSql').textContent = 'Sql Code';
+            document.querySelectorAll('.btn-icon').forEach((el) => el.classList.remove('disabled'));
         }, false);
         
     }
