@@ -9,11 +9,15 @@ export class SqlCode {
         this.obj = this.app.getComponentByName('Layout').obj;
         this.format = null
         this.utils = new Utils();
-        this.tableInFocus = null;
+        this.visual = null;
     }
 
     template(){
         return null;
+    }
+
+    init(){
+        this.visual = this.app.getComponentByName('VisualSql');
     }
 
     loadSqlEditor(){
@@ -245,7 +249,9 @@ export class SqlCode {
         tabTrigger.show();
     }
 
-    async buildQuery(id, type){
+    async buildQuery(type){
+
+        let id = this.visual.dataNode.tableName;
 
         if(type == "OBJECT_NAME"){
             var line = this.editor.getPosition();
@@ -275,7 +281,7 @@ export class SqlCode {
             return false;
         }
 
-        if(type == "DISCRIBE"){
+        if(type == "DESCRIBE"){
         
             let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
             for(let item of data){
@@ -287,6 +293,10 @@ export class SqlCode {
 
     setLenght(str, len){
         return str + ' '.repeat(len - str.length);
+    }
+
+    setdataNode(tableName){
+
     }
 
     async events(){
@@ -316,21 +326,20 @@ export class SqlCode {
         }, false);
 
         document.querySelector('#listTableResult').addEventListener('click', async (event) => { 
+                        
             if(document.querySelector('#sqlVisual').classList.contains('hide')){
 
-                this.tableInFocus = event.target.getAttribute('pk');
+                this.visual.setDataNode( event.target.getAttribute('pk') );
 
-                if(event.target.classList.contains('bi-chevron-compact-down')){
-                   
-                    let panelHide = event.target.closest('button').nextElementSibling;
-                    
+                if(event.target.classList.contains('bi-chevron-compact-down')){                   
+                    let panelHide = event.target.closest('button').nextElementSibling;                    
                     if(panelHide.classList.contains('hide')){
                         panelHide.classList.remove('hide'); 
                     }else{
                         panelHide.classList.add('hide');
-                    }
-                    
+                    }                    
                 }else{
+                    if(!event.target.getAttribute('pk')) return false;
                     await this.app.render({
                         path: "/src/layout/InsertionType.js",
                         target: ".modal",
@@ -341,13 +350,9 @@ export class SqlCode {
                         }
                     });
                 }
-
-
-            }else{
-                let visual = this.app.getComponentByName('VisualSql');
-
-                await visual.createDivTable( event.target );
-                //this.criaDiv(50, 100, event.target.getAttribute('pk'), event.target.getAttribute('fk'))
+            }else{                                
+                this.visual.setDataNode( event.target.getAttribute('pk') );
+                await visual.createDivTable();
             }
         }, false);
     }

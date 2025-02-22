@@ -35,6 +35,12 @@ export class App {
             //await this.callRender(window.location.hash);
             //event.preventDefault();
         };
+
+        window.addEventListener('hide.bs.modal', () => {
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
+        });
     }
 
     async callRender(path) {

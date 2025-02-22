@@ -2,7 +2,8 @@ export class VisualSql {
 
     constructor(app, sqlCode){
         this.app = app;
-        this.result = [];
+        this.data = [];
+        this.dataNode = {};
         this.params = {};
         this.sqlCode = sqlCode;
     }
@@ -13,30 +14,16 @@ export class VisualSql {
 
     async loadTableList(){   
     
-        this.result = [];
+        this.data  = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/2`;
+        let url = `http://localhost:8092/api/v1/generic/find/1`;
         let list = await this.app.fetch.postData(url, [
             {
                 _key: 'name', 
                 _value: '%'+document.querySelector('#searchTable').value+'%'
             }
         ]);
-
-        /*[
-            {
-                table_name: '',
-                columns: [
-                    {
-                        column_name: '',
-                        udt_name: '',
-                        constraint_type: '',
-                        fk_table: ''
-                    }
-                ]
-            }
-        ]*/
 
         let lookup = [];
         
@@ -46,11 +33,11 @@ export class VisualSql {
             
             if(lookup.indexOf(jsonText) === -1){
                 lookup.push(jsonText);
-                this.result.push(JSON.parse(jsonText));
+                this.data .push(JSON.parse(jsonText));
             }
         }
 
-        for(let table of this.result){
+        for(let table of this.data ){
             
             for(let item of list){
                 
@@ -67,7 +54,7 @@ export class VisualSql {
             }
         }
         
-        for(let item of this.result){
+        for(let item of this.data ){
             
             let fk = '';
             let pk = '';
@@ -81,7 +68,7 @@ export class VisualSql {
                     pk += ','+col.constraintType;
                 }
                 if(col.columnName){
-                    columns += `<li style="padding-left: 30px" pk='${col.columnName}'>&#8226; ${col.columnName}</li>`;
+                    columns += `<li style="padding-left: 30px">&#8226; ${col.columnName}</li>`;
                 }
             }
             let btn = `<button type='button' class='list-group-item text-start d-flex justify-content-between' pk='${item.tableName}' fk='${fk.substring(1)}'>
@@ -93,17 +80,21 @@ export class VisualSql {
         }
     }
 
-    async createDivTable(element){
+    setDataNode(id){
+        this.dataNode = this.data.find( obj => obj.tableName == id);
+    }
+
+    async createDivTable(){
 
         let that = this;
 
-        let fk = element.closest('button').getAttribute('fk');
-        let pk = element.closest('button').getAttribute('pk');
+        let fk = this.dataNode.columns.filter(item => item.referencedTableName != '');
+        let pk = this.dataNode.tableName;
         let sqlVisual = document.querySelector('#sqlVisual');
-        let result = this.result.find( obj => obj.tableName == pk);
+        //let result = this.data.find( obj => obj.tableName == pk);
         let row = "";
       
-        for(let item of result.columns){
+        for(let item of this.dataNode.columns){
 
             let constraintType = '';
             if (item.constraintType == 'PRIMARY KEY'){
@@ -128,9 +119,9 @@ export class VisualSql {
                 </div>`;
         }
 
-        let html = `<div class='card table-float' id='${pk}' fk='${fk}'>
+        let html = `<div class='card table-float' id='${pk}' fk='${fk[0]?.referencedTableName}'>
                 <div class='card-header d-flex justify-content-between'>
-                    <span><i class="bi bi-node-plus-fill me-2"></i> ${element.textContent}</span>
+                    <span><i class="bi bi-node-plus-fill me-2"></i> ${pk}</span>
                     <i class="bi bi-x-square close-visual-sql"></i>
                 </div>
                 <div class='card-body'>	
@@ -259,7 +250,7 @@ export class VisualSql {
 
     setLineFromTo(from){
 
-        let obj = this.result.find( obj => obj.tableName == from.id);
+        let obj = this.data .find( obj => obj.tableName == from.id);
         let container = document.querySelector('#sqlVisual');
         let listTo = obj.columns.filter(item => item.referencedTableName);
 

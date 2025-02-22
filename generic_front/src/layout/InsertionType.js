@@ -50,7 +50,7 @@ export class InsertionType {
         document.querySelector('#btnInsertionTypeOk').addEventListener('click', async (event) => {
             let selected = document.querySelector('input[name="buildQuery"]:checked');
             
-            this.sqlCode.buildQuery(this.sqlCode.tableInFocus, selected.value);
+            this.sqlCode.buildQuery(selected.value);
             await this.app.modal.close();
         }, false);
 
