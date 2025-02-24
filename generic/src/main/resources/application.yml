@@ -7,7 +7,7 @@ spring:
   datasource:
     username: SA
     password: Dev@2021
-    url: jdbc:sqlserver://127.0.0.1:1433;database=model;encrypt=false;trustServerCertificate=false;loginTimeout=30;
+    url: jdbc:sqlserver://sqlserver:1433;database=model;encrypt=false;trustServerCertificate=false;loginTimeout=30;
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:

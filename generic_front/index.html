@@ -15,7 +15,7 @@
         <!-- App -->
         <div id="app"></div>
         <!-- Modal -->
-        <div class="modal fade" id="appModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
+        <div class="modal" id="appModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -29,7 +29,7 @@
         <!-- JavaScript -->
         <script src="./src/assets/bootstrap/dist/js/bootstrap.bundle.js"></script>
         <script>
-            var require = { paths: { vs: '/src/assets/monaco-editor/min/vs' } };
+            var require = { paths: { vs: './src/assets/monaco-editor/min/vs' } };
         </script>
         <script src="./src/assets/monaco-editor/min/vs/loader.js" type="text/javascript"></script>
 		<script src="./src/assets/monaco-editor/min/vs/editor/editor.main.js" type="text/javascript"></script>

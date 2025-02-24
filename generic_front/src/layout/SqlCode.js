@@ -331,6 +331,20 @@ export class SqlCode {
             this.editor.setValue( str ) ;
         }, false);
 
+        document.querySelector('#btn2Sql').addEventListener('click', async (event) => {
+            await this.app.render({
+                path: "/src/layout/Command.js",
+                target: ".modal",
+                app: true,
+                params: {
+                    label: "Command",
+                    size: "modal-xl"
+                }
+            });
+        }, false);
+
+        
+
         document.querySelector('#listTableResult').addEventListener('click', async (event) => { 
                         
             if(document.querySelector('#sqlVisual').classList.contains('hide')){

@@ -20,6 +20,28 @@ public class GenericRepository {
 	@PersistenceContext 
     private EntityManager manager;
 
+    public int setInsert(GenericMetaData metadata){
+        /*
+            ### Exemplo de metadata.get_sql():
+            INSERT INTO TABLE_NAME (COL_1, COL_2) VALUES (:val_1, :val_2)
+
+            ### Exemplo de metadata.getParameters():
+            [
+                {
+                    parameterId: 1, _key: "val_1", _value: "VALOR_COL_1"
+                },
+                {
+                    parameterId: 2, _key: "val_2", _value: "VALOR_COL_2"
+                }
+            ]
+        */ 
+        Query nativeQuery = manager.createNativeQuery(metadata.get_sql()); 
+        for (GenericParameters param : metadata.getParameters()){
+            this.setParameters(nativeQuery, param);            
+        } 
+        return nativeQuery.executeUpdate();
+    }
+
     @SuppressWarnings("unchecked")
     public List<Map<String, String>> getSelect(GenericMetaData metadata){
 
@@ -28,7 +50,7 @@ public class GenericRepository {
         Query nativeQuery = manager.createNativeQuery(metadata.get_sql(), Tuple.class);
         
         for (GenericParameters param : metadata.getParameters()){
-            this.nativeQuery(nativeQuery, param);            
+            this.setParameters(nativeQuery, param);            
         }
         
         final List<Tuple> queryRows = nativeQuery.getResultList();
@@ -43,7 +65,7 @@ public class GenericRepository {
         return listResult;
     }  
     
-    public Query nativeQuery(Query nativeQuery, GenericParameters param){
+    public Query setParameters(Query nativeQuery, GenericParameters param){
 
         if (GenericUtils.isConvertibleToDate(param.get_value())){
             return nativeQuery.setParameter(param.get_key(), GenericUtils.convertibleToDate(param.get_value()));

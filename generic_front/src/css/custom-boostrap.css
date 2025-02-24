@@ -32,7 +32,8 @@
 
 pre {
     white-space: pre-wrap;
-    tab-size: 2
+    tab-size: 2;
+    margin-bottom: 0;
 }
 
 .split {

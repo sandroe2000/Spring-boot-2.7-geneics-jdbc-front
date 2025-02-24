@@ -12,7 +12,7 @@ var vNotify = (function() {
     fadeInDuration: 1000,
     fadeOutDuration: 1000,
     fadeInterval: 50,
-    visibleDuration: 3000,
+    visibleDuration: 5000,
     postHoverVisibleDuration: 500,
     position: positionOption.topRight,
     sticky: false,

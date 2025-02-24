@@ -15,15 +15,21 @@ export class VisualSql {
     async loadTableList(){   
     
         this.data  = [];
+        let list = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let url = `http://localhost:8092/api/v1/generic/find/2`;
-        let list = await this.app.fetch.postData(url, [
-            {
-                _key: 'name', 
-                _value: '%'+document.querySelector('#searchTable').value+'%'
-            }
-        ]);
+        try{
+            let url = `http://localhost:8092/api/v1/generic/find/1`;
+            list = await this.app.fetch.postData(url, [
+                {
+                    _key: 'name', 
+                    _value: '%'+document.querySelector('#searchTable').value+'%'
+                }
+            ]);
+        }catch(err){
+            vNotify.error({title:'No data found'});
+            return false;
+        }
 
         let lookup = [];
         

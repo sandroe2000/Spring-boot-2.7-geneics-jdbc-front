@@ -1,6 +1,7 @@
 package br.com.arrowdata.generic.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import br.com.arrowdata.generic.entity.GenericParameters;
 import br.com.arrowdata.generic.exception.ResourceNotFoundException;
 import br.com.arrowdata.generic.repository.GenericMetaDataRepository;
 import br.com.arrowdata.generic.repository.GenericRepository;
+import br.com.arrowdata.generic.service.GenericService;
 
 
 @RestController
@@ -25,17 +27,32 @@ public class GenericRestController {
 
     private final  GenericRepository genericRepository;
     private final  GenericMetaDataRepository genericMetaDataRepository;
+    private final  GenericService genericService;
 
     public GenericRestController(
         GenericRepository genericRepository, 
-        GenericMetaDataRepository genericMetaDataRepository){
-        this.genericRepository = genericRepository;
-        this.genericMetaDataRepository = genericMetaDataRepository;
+        GenericMetaDataRepository genericMetaDataRepository,
+        GenericService genericService){
+            this.genericRepository = genericRepository;
+            this.genericMetaDataRepository = genericMetaDataRepository;
+            this.genericService = genericService;
+    }
+
+    @PostMapping("/command")
+    public Map<String, String> setCommand(@RequestBody String command) throws Exception {
+        return genericService.setCommand(command);
     }
 
     @PostMapping()
     public List<Map<String, String>> getSelect(@RequestBody GenericMetaData genericMetaData) throws Exception {
         return genericRepository.getSelect(genericMetaData);
+    }
+
+    @PostMapping("/insert")
+    public Map<String, String> setInsert(@RequestBody GenericMetaData genericMetaData) throws Exception {        
+        Map<String, String> result = new HashMap<>();
+        result.put("rowsAffected", String.valueOf(genericRepository.setInsert(genericMetaData)));
+        return result;
     }
 
     @PostMapping("/save")
@@ -71,5 +88,4 @@ public class GenericRestController {
         List<Map<String, String>> result = this.findById(1L, genericParameters); 
         return result;     
     }
-
 }

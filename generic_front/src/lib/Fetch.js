@@ -1,4 +1,4 @@
-import { Base64 } from '/src/assets/js-base64/base64.mjs';
+import { Base64 } from '/src/assets/js-base64/base64.js';
 
 export class Fetch {
 
@@ -71,7 +71,15 @@ export class Fetch {
             body: JSON.stringify(json)
         }).then(async (resp) => {
             if (resp.ok) {
-                result = resp.json();
+                try{
+                    result = resp.json();
+                }catch(e){
+                    try{
+                        result = resp.text();
+                    }catch(e){
+                        result = {message: 'Erro desconhecido.'};
+                    };
+                };
             } else {
                 result = resp.text()
                 .then(text => { 
