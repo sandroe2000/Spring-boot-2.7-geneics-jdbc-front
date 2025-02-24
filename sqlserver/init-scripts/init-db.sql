@@ -1,4 +1,4 @@
--- Active: 1740139247655@@127.0.0.1@1433@model
+-- Active: 1740084242082@@127.0.0.1@1433@model
 CREATE DATABASE model;
 GO
 
@@ -34,6 +34,17 @@ BEGIN
         _value VARCHAR(255),
         primary key (parameter_id),
         metadata_id bigint REFERENCES generic_metadata (metadata_id)  ON DELETE CASCADE
+    )
+END;
+GO
+
+IF OBJECT_ID(N'[dbo].[generic_configs]', 'U') IS NULL
+BEGIN
+    create table generic_configs (
+        config_id bigint IDENTITY(1, 1),
+        config_key VARCHAR(255),
+        config_value VARCHAR(255),
+        primary key (config_id)
     )
 END;
 GO

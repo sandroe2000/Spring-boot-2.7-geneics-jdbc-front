@@ -18,8 +18,10 @@ export class VisualSql {
         let list = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
+        let config = await this.getConfigByKey('CONF_LEFT_TABLE_LIST');
+
         try{
-            let url = `http://localhost:8092/api/v1/generic/find/1`;
+            let url = `http://localhost:8092/api/v1/generic/find/${config.configValue}`;
             list = await this.app.fetch.postData(url, [
                 {
                     _key: 'name', 
@@ -183,7 +185,8 @@ export class VisualSql {
             }
         });
 
-        document.addEventListener('mouseup', () => {
+        document.addEventListener('mouseup', (e) => {
+            e.preventDefault();
             isDragging = false;
 
             document.querySelectorAll('.table-float').forEach(element => {
@@ -308,6 +311,13 @@ export class VisualSql {
         .catch((err) => console.error(err.name, err.message));
     }
 
+    async getConfigByKey(configKey){
+
+        let url = `http://localhost:8092/api/v1/generic/configs/${configKey}`;
+        let result = await this.app.fetch.getData(url, '');
+        return result;
+    }
+
     async events(){
 
         document.querySelector('#sqlVisual').addEventListener('click', (event) => {
@@ -353,7 +363,19 @@ export class VisualSql {
                 }
                 document.querySelector('#tblContextMenu').remove();
             });
+        });
 
+        document.querySelector('#btnConfig').addEventListener('click', async (event) => {
+            
+            await this.app.render({
+                path: "/src/layout/Config.js",
+                target: ".modal",
+                app: true,
+                params: {
+                    size: 'modal-xl',
+                    label: "Configurações"
+                }
+            });      
         });
     }
 }
