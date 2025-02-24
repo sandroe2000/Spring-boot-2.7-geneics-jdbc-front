@@ -286,10 +286,10 @@ export class SqlCode {
 
         if(type == "DESCRIBE"){
         
-            let str =   `${this.setLenght('ordinalPos', 12)}${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
+            let str =   `${this.setLenght('columnName', 24)}${this.setLenght('constraintType', 16)}${this.setLenght('dataType', 12)}${this.setLenght('isNullable', 12)}${this.setLenght('maxLength', 12)}${this.setLenght('fkTableName', 24)}\n`;
             
             for(let item of data){
-                str += `${this.setLenght(item.ORDINAL_POSITION, 12)}${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
+                str += `${this.setLenght(item.columnName, 24)}${this.setLenght(item.constraintType, 16)}${this.setLenght(item.dataType, 12)}${this.setLenght(item.isNullable, 12)}${this.setLenght(item.maxLength, 12)}${this.setLenght(item.fkTableName, 24)}\n`;
             }
 
             this.editor.setValue(str);

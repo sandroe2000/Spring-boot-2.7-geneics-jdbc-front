@@ -140,6 +140,13 @@ export class App {
         }
         return null;
     }
+
+    async config(configKey){
+
+        let url = `http://localhost:8092/api/v1/generic/configs/${configKey}`;
+        let result = await this.fetch.getData(url, '');
+        return result.configValue;
+    }
 }
 
 document.addEventListener("readystatechange", (event) => { 

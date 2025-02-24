@@ -18,16 +18,17 @@ export class VisualSql {
         let list = [];
         document.querySelector('#listTableResult').innerHTML = '';
 
-        let config = await this.getConfigByKey('CONF_LEFT_TABLE_LIST');
+        let confLeftTableList = await this.app.config('CONF_LEFT_TABLE_LIST');
+        let body = [
+            {
+                _key: 'name', 
+                _value: '%'+document.querySelector('#searchTable').value+'%'
+            }
+        ];
+        let url = `http://localhost:8092/api/v1/generic/find/${confLeftTableList}`;            
 
         try{
-            let url = `http://localhost:8092/api/v1/generic/find/${config.configValue}`;
-            list = await this.app.fetch.postData(url, [
-                {
-                    _key: 'name', 
-                    _value: '%'+document.querySelector('#searchTable').value+'%'
-                }
-            ]);
+            list = await this.app.fetch.postData(url, body);
         }catch(err){
             vNotify.error({title:'No data found'});
             return false;
@@ -309,13 +310,6 @@ export class VisualSql {
             console.log('Text copied');
         })
         .catch((err) => console.error(err.name, err.message));
-    }
-
-    async getConfigByKey(configKey){
-
-        let url = `http://localhost:8092/api/v1/generic/configs/${configKey}`;
-        let result = await this.app.fetch.getData(url, '');
-        return result;
     }
 
     async events(){
